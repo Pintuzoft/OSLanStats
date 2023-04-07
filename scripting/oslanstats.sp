@@ -28,6 +28,7 @@ public void Event_PlayerDeath ( Event event, const char[] name, bool dontBroadca
     int victim_id = GetEventInt(event, "userid");
     int attacker_id = GetEventInt(event, "attacker");
     int assister_id = GetEventInt(event, "assister");
+    bool isAssist = ( assister_id != 0 );
     int victim = GetClientOfUserId(victim_id);
     int attacker = GetClientOfUserId(attacker_id);
     int assister = GetClientOfUserId(assister_id);
@@ -43,15 +44,18 @@ public void Event_PlayerDeath ( Event event, const char[] name, bool dontBroadca
     
     GetClientName ( victim, victim_name, sizeof ( victim_name ) );
     GetClientName ( attacker, attacker_name, sizeof ( attacker_name ) );
-    GetClientName ( assister, assister_name, sizeof ( assister_name ) );
+    
     GetClientAuthId ( victim, AuthId_Steam2, victim_steamid, sizeof ( victim_steamid ) );
     GetClientAuthId ( attacker, AuthId_Steam2, attacker_steamid, sizeof ( attacker_steamid ) );
-//    GetClientAuthId ( assister, AuthId_Steam2, assister_steamid, sizeof ( assister_steamid ) );
-
     int victim_team = GetClientTeam (victim);
-    int attacker_team = GetClientTeam ( attacker );
-    int assister_team = GetClientTeam ( assister );
+    int attacker_team = GetClientTeam (attacker);
+    int assister_team = -1;
 
+    if ( isAssist ) {
+        GetClientName ( assister, assister_name, sizeof ( assister_name ) );
+        GetClientAuthId ( assister, AuthId_Steam2, assister_steamid, sizeof ( assister_steamid ) );
+        assister_team = GetClientTeam ( assister );
+    }
     GetEventString(event, "weapon", weapon, sizeof(weapon));
 
     bool isSuicide = ( victim == attacker );
