@@ -118,8 +118,7 @@ public void addEvent ( char attacker_steamid[32], char attacker_name[64], char v
     SQL_BindParamInt ( stmt, 11, isHeadshot );
     SQL_BindParamInt ( stmt, 12, numPenetrated );
     SQL_BindParamInt ( stmt, 13, isThruSmoke );
-    PrintToChatAll ( "isBlinded: %d", isBlinded );
-    SQL_BindParamInt ( stmt, 14, isBlinded );
+    SQL_BindParamInt ( stmt, 14, view_as<int>(isBlinded) );
 
 
     if ( ! SQL_Execute ( stmt ) ) {
