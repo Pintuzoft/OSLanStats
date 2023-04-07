@@ -112,13 +112,13 @@ public void addEvent ( char attacker_steamid[32], char attacker_name[64], char v
     SQL_BindParamString ( stmt, 6, assister_name, false );
     SQL_BindParamString ( stmt, 7, weapon, false );
 
-    SQL_BindParamInt ( stmt, 8, view_as<int>(isSuicide) );
-    SQL_BindParamInt ( stmt, 9, view_as<int>(isTeamKill) );
-    SQL_BindParamInt ( stmt, 10, view_as<int>(isTeamAssist) );
-    SQL_BindParamInt ( stmt, 11, view_as<int>(isHeadshot) );
-    SQL_BindParamInt ( stmt, 12, numPenetrated );
-    SQL_BindParamInt ( stmt, 13, view_as<int>(isThruSmoke) );
-    SQL_BindParamInt ( stmt, 14, view_as<int>(isBlinded) );
+    SQL_BindParamInt(stmt, 8, isSuicide ? 1 : 0);
+    SQL_BindParamInt(stmt, 9, isTeamKill ? 1 : 0);
+    SQL_BindParamInt(stmt, 10, isTeamAssist ? 1 : 0);
+    SQL_BindParamInt(stmt, 11, isHeadshot ? 1 : 0);
+    SQL_BindParamInt(stmt, 12, numPenetrated);
+    SQL_BindParamInt(stmt, 13, isThruSmoke ? 1 : 0);
+    SQL_BindParamInt(stmt, 14, isBlinded ? 1 : 0);
 
 
     if ( ! SQL_Execute ( stmt ) ) {
