@@ -38,6 +38,9 @@ public void Event_PlayerDeath ( Event event, const char[] name, bool dontBroadca
     char attacker_steamid[32];
     char assister_steamid[32];
 
+    Format ( assister_name, sizeof ( assister_name ), "-" );
+    Format ( assister_steamid, sizeof ( assister_steamid ), "-" );
+    
     GetClientName ( victim, victim_name, sizeof ( victim_name ) );
     GetClientName ( attacker, attacker_name, sizeof ( attacker_name ) );
     GetClientName ( assister, assister_name, sizeof ( assister_name ) );
