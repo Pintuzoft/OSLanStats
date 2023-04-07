@@ -4,7 +4,7 @@
 #include <cstrike>
 
 char error[255];
-Database db = Database("oslanstats", error, sizeof(error));
+Handle mysql = null;
 
 public Plugin myinfo = {
 	name = "OSLanStats",
@@ -14,115 +14,115 @@ public Plugin myinfo = {
 	url = "https://github.com/Pintuzoft/OSLanStats"
 }
 
+
 public void OnPluginStart() {
     HookEvent ( "player_death", Event_PlayerDeath );
-
-
 }
 
+public void OnMapStart ( ) {
+    checkConnection ( );
+}
 
 public void Event_PlayerDeath ( Event event, const char[] name, bool dontBroadcast ) {
+    char weapon[32];
     int victim_id = GetEventInt(event, "userid");
     int attacker_id = GetEventInt(event, "attacker");
     int assister_id = GetEventInt(event, "assister");
     int victim = GetClientOfUserId(victim_id);
     int attacker = GetClientOfUserId(attacker_id);
     int assister = GetClientOfUserId(assister_id);
+    char victim_name[64];
+    char attacker_name[64];
+    char assister_name[64];
+    char victim_steamid[32];
+    char attacker_steamid[32];
+    char assister_steamid[32];
+
+    GetClientName ( victim, victim_name, sizeof ( victim_name ) );
+    GetClientName ( attacker, attacker_name, sizeof ( attacker_name ) );
+    GetClientName ( assister, assister_name, sizeof ( assister_name ) );
+    GetClientAuthId ( victim, AuthId_Steam2, victim_steamid, sizeof ( victim_steamid ) );
+    GetClientAuthId ( attacker, AuthId_Steam2, attacker_steamid, sizeof ( attacker_steamid ) );
+    GetClientAuthId ( assister, AuthId_Steam2, assister_steamid, sizeof ( assister_steamid ) );
+
     int victim_team = GetClientTeam (victim);
     int attacker_team = GetClientTeam ( attacker );
     int assister_team = GetClientTeam ( assister );
-    char weapon[32];
+
     GetEventString(event, "weapon", weapon, sizeof(weapon));
 
-
-
-
-
+    bool isSuicide = ( victim == attacker );
+    bool isTeamKill = ( victim_team == attacker_team );
+    bool isTeamAssist = ( victim_team == assister_team );
+    bool isHeadshot = ( GetEventInt(event, "headshot") == 1 );
+    bool isPenetrated = ( GetEventInt(event, "penetrated") == 1 );
+    bool isThruSmoke = ( GetEventInt(event, "thrusmoke") == 1 );
+    bool isBlinded = ( GetEventInt(event, "attackerblind") == 1 );
 
 
     if ( ! playerIsReal ( victim ) || 
          ! playerIsReal ( attacker ) ) {
         return;
     }
-
-
-    if ( victim_team == attacker_team ) {
-        // TeamKill
-        addTeamKill ( attacker, victim );
-    } else {
-        // Kill
-        addKill ( attacker, victim );
-    }
-
-    if ( victim_team == assister_team ) {
-        // TeamAssist
-        addTeamAssist ( assister, victim );
-    } else {
-        // Assist
-        addAssist ( assister, victim );
-    }
-
-
-
-
+ 
+    addEvent (  
+        attacker_steamid, 
+        attacker_name, 
+        victim_steamid, 
+        victim_name, 
+        assister_steamid, 
+        assister_name,
+        weapon,
+        isSuicide,
+        isTeamKill,
+        isTeamAssist,
+        isHeadshot, 
+        isPenetrated, 
+        isThruSmoke, 
+        isBlinded 
+    );
 }
 
 /* METHODS */
 
-public void addTeamKill ( int attacker, int victim ) {
+
+public void addEvent ( char attacker_steamid[32], char attacker_name[64], char victim_steamid[32], char victim_name[64], char assister_steamid[32], char assister_name[64], char weapon[32], bool isSuicide, bool isTeamKill, bool isTeamAssist, bool isHeadshot, bool isPenetrated, bool isThruSmoke, bool isBlinded ) {
     char query[255];
+    checkConnection ( );
     DBStatement stmt;
-    char steamid[32];
-    char attacker_name[64];
-    GetClientAuthId ( attacker, AuthId_Steam2, steamid, sizeof ( steamid ) );
-    GetClientName ( attacker, attacker_name, sizeof ( attacker_name ) );
-    query = "insert into player  ( steamid, name, kills, deaths, assists, teamkills, teamdeaths, teamassists ) values ( ?, ?, 1, 0, 0, 1, 0, 0 ) on duplicate key update teamkills = teamkills + 1, kills = kills + 1";
-    if ( ( stmt = SQL_PrepareQuery ( db, query, error, sizeof(error) ) ) == null ) {
-        SQL_GetError ( db, error, sizeof(error));
+    query = "insert into event ( attacker_steamid, attacker_name, victim_steamid, victim_name, assister_steamid, assister_name, weapon, suicide, teamkill, teamassist, headshot, penetrated, thrusmoke, blinded ) values ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+
+    if ( ( stmt = SQL_PrepareQuery ( mysql, query, error, sizeof(error) ) ) == null ) {
+        SQL_GetError ( mysql, error, sizeof(error));
         PrintToServer("[OSLanStats]: Failed to prepare query[0x01] (error: %s)", error);
         return;
     }
-    SQL_BindParamString ( stmt, 1, steamid, false );
+
+    SQL_BindParamString ( stmt, 1, attacker_steamid, false );
     SQL_BindParamString ( stmt, 2, attacker_name, false );
+    SQL_BindParamString ( stmt, 3, victim_steamid, false );
+    SQL_BindParamString ( stmt, 4, victim_name, false );
+    SQL_BindParamString ( stmt, 5, assister_steamid, false );
+    SQL_BindParamString ( stmt, 6, assister_name, false );
+    SQL_BindParamString ( stmt, 7, weapon, false );
+
+    SQL_BindParamInt ( stmt, 8, isSuicide );
+    SQL_BindParamInt ( stmt, 9, isTeamKill );
+    SQL_BindParamInt ( stmt, 10, isTeamAssist );
+    SQL_BindParamInt ( stmt, 11, isHeadshot );
+    SQL_BindParamInt ( stmt, 12, isPenetrated );
+    SQL_BindParamInt ( stmt, 13, isThruSmoke );
+    SQL_BindParamInt ( stmt, 14, isBlinded );
+
+
     if ( ! SQL_Execute ( stmt ) ) {
-        SQL_GetError ( db, error, sizeof(error));
-        PrintToServer("[OSLanStats]: Failed to query[0x02] (error: %s)", error);
+        SQL_GetError ( mysql, error, sizeof(error));
+        PrintToServer("[OSLanStats]: Failed to execute query[0x01] (error: %s)", error);
         return;
     }
-    stmt.Close();
-}
-
-public void addKill ( int attacker, int victim ) {
-    char query[255];
-    DBStatement stmt;
-    query = "insert into player  ( steamid, name, kills, deaths, assists, teamkills, teamdeaths, teamassists ) values ( ?, ?, 1, 0, 0, 0, 0, 0 ) on duplicate key update kills = kills + 1";
-    stmt = db.Prepare(query, error, sizeof(error));
-    stmt.BindString(1, GetClientAuthId(attacker));
-    stmt.BindString(2, GetClientName(attacker));
-    stmt.Execute();
-    stmt.Close();
-}
-
-public void addTeamAssist ( int assister, int victim ) {
-    char query[255];
-    DBStatement stmt;
-    query = "insert into player  ( steamid, name, kills, deaths, assists, teamkills, teamdeaths, teamassists ) values ( ?, ?, 0, 0, 1, 0, 0, 1 ) on duplicate key update teamassists = teamassists + 1, assists = assists + 1";
-    stmt = db.Prepare(query, error, sizeof(error));
-    stmt.BindString(1, GetClientAuthId(assister));
-    stmt.BindString(2, GetClientName(assister));
-    stmt.Execute();
-    stmt.Close();
-}
-
-public void addAssist ( int assister, int victim ) {
-    char query[255];
-    DBStatement stmt;
-    query = "insert into player  ( steamid, name, kills, deaths, assists, teamkills, teamdeaths, teamassists ) values ( ?, ?, 0, 0, 1, 0, 0, 0 ) on duplicate key update assists = assists + 1";
-    stmt = db.Prepare(query, error, sizeof(error));
-    stmt.BindString(1, GetClientAuthId(assister));
-    stmt.BindString(2, GetClientName(assister));
-    stmt.Execute();
-    stmt.Close();
+    if ( stmt != null ) {
+        delete stmt;
+    }
 }
 
 public bool playerIsReal ( int client ) {
@@ -136,4 +136,16 @@ public bool playerIsReal ( int client ) {
     return false;
 }
 
+public void databaseConnect ( ) {
+    if ( ( mysql = SQL_Connect ( "lanstats", true, error, sizeof(error) ) ) != null ) {
+        PrintToServer ( "[OSLanStats]: Connected to knivhelg database!" );
+    } else {
+        PrintToServer ( "[OSLanStats]: Failed to connect to knivhelg database! (error: %s)", error );
+    }
+}
 
+public void checkConnection ( ) {
+    if ( mysql == null || mysql == INVALID_HANDLE ) {
+        databaseConnect ( );
+    }
+}
