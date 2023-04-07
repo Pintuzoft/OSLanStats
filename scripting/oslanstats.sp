@@ -46,7 +46,7 @@ public void Event_PlayerDeath ( Event event, const char[] name, bool dontBroadca
     GetClientName ( assister, assister_name, sizeof ( assister_name ) );
     GetClientAuthId ( victim, AuthId_Steam2, victim_steamid, sizeof ( victim_steamid ) );
     GetClientAuthId ( attacker, AuthId_Steam2, attacker_steamid, sizeof ( attacker_steamid ) );
-    GetClientAuthId ( assister, AuthId_Steam2, assister_steamid, sizeof ( assister_steamid ) );
+//    GetClientAuthId ( assister, AuthId_Steam2, assister_steamid, sizeof ( assister_steamid ) );
 
     int victim_team = GetClientTeam (victim);
     int attacker_team = GetClientTeam ( attacker );
