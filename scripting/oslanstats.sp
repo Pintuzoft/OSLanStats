@@ -64,7 +64,6 @@ public void Event_PlayerDeath ( Event event, const char[] name, bool dontBroadca
     bool isHeadshot = GetEventBool(event, "headshot");
     int numPenetrated = GetEventInt(event, "penetrated");
     bool isThruSmoke = GetEventBool (event, "thrusmoke");
-    bool isBlinded = GetEventBool(event, "attackerblind");
 
     if ( ! playerIsReal ( victim ) || 
          ! playerIsReal ( attacker ) ) {
@@ -84,19 +83,18 @@ public void Event_PlayerDeath ( Event event, const char[] name, bool dontBroadca
         isTeamAssist,
         isHeadshot, 
         numPenetrated, 
-        isThruSmoke, 
-        isBlinded 
+        isThruSmoke 
     );
 }
 
 /* METHODS */
 
 
-public void addEvent ( char attacker_steamid[32], char attacker_name[64], char victim_steamid[32], char victim_name[64], char assister_steamid[32], char assister_name[64], char weapon[32], bool isSuicide, bool isTeamKill, bool isTeamAssist, bool isHeadshot, int numPenetrated, bool isThruSmoke, bool isBlinded ) {
+public void addEvent ( char attacker_steamid[32], char attacker_name[64], char victim_steamid[32], char victim_name[64], char assister_steamid[32], char assister_name[64], char weapon[32], bool isSuicide, bool isTeamKill, bool isTeamAssist, bool isHeadshot, int numPenetrated, bool isThruSmoke ) {
     char query[255];
     checkConnection ( );
     DBStatement stmt;
-    query = "insert into event ( attacker_steamid, attacker_name, victim_steamid, victim_name, assister_steamid, assister_name, weapon, suicide, teamkill, teamassist, headshot, penetrated, thrusmoke, blinded ) values ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+    query = "insert into event ( attacker_steamid, attacker_name, victim_steamid, victim_name, assister_steamid, assister_name, weapon, suicide, teamkill, teamassist, headshot, penetrated, thrusmoke ) values ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0 )";
 
     if ( ( stmt = SQL_PrepareQuery ( mysql, query, error, sizeof(error) ) ) == null ) {
         SQL_GetError ( mysql, error, sizeof(error));
@@ -112,20 +110,13 @@ public void addEvent ( char attacker_steamid[32], char attacker_name[64], char v
     SQL_BindParamString ( stmt, 6, assister_name, false );
     SQL_BindParamString ( stmt, 7, weapon, false );
 
-    int intIsSuicide = isSuicide ? 1 : 0;
-    int intIsTeamKill = isTeamKill ? 1 : 0;
-    int intIsTeamAssist = isTeamAssist ? 1 : 0;
-    int intIsHeadshot = isHeadshot ? 1 : 0;
-    int intIsThruSmoke = isThruSmoke ? 1 : 0;
-    int intIsBlinded = isBlinded ? 1 : 0;
+    SQL_BindParamInt ( stmt, 8, isSuicide );
+    SQL_BindParamInt ( stmt, 9, isTeamKill );
+    SQL_BindParamInt ( stmt, 10, isTeamAssist );
+    SQL_BindParamInt ( stmt, 11, isHeadshot );
+    SQL_BindParamInt ( stmt, 12, numPenetrated );
+    SQL_BindParamInt ( stmt, 13, isThruSmoke );
 
-    SQL_BindParamInt(stmt, 8, intIsSuicide);
-    SQL_BindParamInt(stmt, 9, intIsTeamKill);
-    SQL_BindParamInt(stmt, 10, intIsTeamAssist);
-    SQL_BindParamInt(stmt, 11, intIsHeadshot);
-    SQL_BindParamInt(stmt, 12, numPenetrated);
-    SQL_BindParamInt(stmt, 13, intIsThruSmoke);
-    SQL_BindParamInt(stmt, 14, intIsBlinded);
 
 
     if ( ! SQL_Execute ( stmt ) ) {
