@@ -61,9 +61,9 @@ public void Event_PlayerDeath ( Event event, const char[] name, bool dontBroadca
     bool isSuicide = ( victim == attacker );
     bool isTeamKill = ( victim_team == attacker_team );
     bool isTeamAssist = ( victim_team == assister_team );
-    bool isHeadshot = GetEventBool(event, "headshot");
+    bool isHeadshot = ( GetEventInt(event, "headshot") == 1 );
     int numPenetrated = GetEventInt(event, "penetrated");
-    bool isThruSmoke = GetEventBool (event, "thrusmoke");
+    bool isThruSmoke = ( GetEventInt (event, "thrusmoke") == 1 );
 
     if ( ! playerIsReal ( victim ) || 
          ! playerIsReal ( attacker ) ) {
@@ -94,22 +94,6 @@ public void addEvent ( char attacker_steamid[32], char attacker_name[64], char v
     checkConnection ( );
     DBStatement stmt;
 
-    PrintToConsoleAll ( "addEvent:" );
-    PrintToConsoleAll ( "attacker_steamid: %s", attacker_steamid );
-    PrintToConsoleAll ( "attacker_name: %s", attacker_name );
-    PrintToConsoleAll ( "victim_steamid: %s", victim_steamid );
-    PrintToConsoleAll ( "victim_name: %s", victim_name );
-    PrintToConsoleAll ( "assister_steamid: %s", assister_steamid );
-    PrintToConsoleAll ( "assister_name: %s", assister_name );
-    PrintToConsoleAll ( "weapon: %s", weapon );
-    PrintToConsoleAll ( "isSuicide: %d", isSuicide );
-    PrintToConsoleAll ( "isTeamKill: %d", isTeamKill );
-    PrintToConsoleAll ( "isTeamAssist: %d", isTeamAssist );
-    PrintToConsoleAll ( "isHeadshot: %d", isHeadshot );
-    PrintToConsoleAll ( "numPenetrated: %d", numPenetrated );
-    PrintToConsoleAll ( "isThruSmoke: %d", isThruSmoke );
-
-
     if ( ( stmt = SQL_PrepareQuery ( mysql, "insert into event ( stamp, attacker_steamid, attacker_name, victim_steamid, victim_name, assister_steamid, assister_name, weapon, suicide, teamkill, teamassist, headshot, penetrated, thrusmoke, blinded ) values ( now(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0 )", error, sizeof(error) ) ) == null ) {
         SQL_GetError ( mysql, error, sizeof(error));
         PrintToServer("[OSLanStats]: Failed to prepare query[0x01] (error: %s)", error);
@@ -124,12 +108,12 @@ public void addEvent ( char attacker_steamid[32], char attacker_name[64], char v
     SQL_BindParamString ( stmt, 6, assister_name, false );
     SQL_BindParamString ( stmt, 7, weapon, false );
 
-    SQL_BindParamInt ( stmt, 8, isSuicide );
-    SQL_BindParamInt ( stmt, 9, isTeamKill );
-    SQL_BindParamInt ( stmt, 10, isTeamAssist );
-    SQL_BindParamInt ( stmt, 11, isHeadshot );
+    SQL_BindParamInt ( stmt, 8, ( isSuicide ? 1 : 0 ) );
+    SQL_BindParamInt ( stmt, 9, ( isTeamKill ? 1 : 0 ) );
+    SQL_BindParamInt ( stmt, 10, ( isTeamAssist ? 1 : 0 ) );
+    SQL_BindParamInt ( stmt, 11, ( isHeadshot ? 1 : 0 ) );
     SQL_BindParamInt ( stmt, 12, numPenetrated );
-    SQL_BindParamInt ( stmt, 13, isThruSmoke );
+    SQL_BindParamInt ( stmt, 13, ( isThruSmoke ? 1 : 0 ) );
 
 
 
