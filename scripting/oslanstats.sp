@@ -58,12 +58,12 @@ public void Event_PlayerDeath ( Event event, const char[] name, bool dontBroadca
     }
     GetEventString(event, "weapon", weapon, sizeof(weapon));
 
-    bool isSuicide = ( victim == attacker );
-    bool isTeamKill = ( victim_team == attacker_team );
-    bool isTeamAssist = ( victim_team == assister_team );
-    bool isHeadshot = ( GetEventInt(event, "headshot") == 1 );
+    int isSuicide = ( victim == attacker );
+    int isTeamKill = ( victim_team == attacker_team );
+    int isTeamAssist = ( victim_team == assister_team );
+    int isHeadshot = GetEventInt(event, "headshot");
     int numPenetrated = GetEventInt(event, "penetrated");
-    bool isThruSmoke = ( GetEventInt (event, "thrusmoke") == 1 );
+    int isThruSmoke = GetEventInt (event, "thrusmoke");
 
     if ( ! playerIsReal ( victim ) || 
          ! playerIsReal ( attacker ) ) {
@@ -90,7 +90,7 @@ public void Event_PlayerDeath ( Event event, const char[] name, bool dontBroadca
 /* METHODS */
 
 
-public void addEvent ( char attacker_steamid[32], char attacker_name[64], char victim_steamid[32], char victim_name[64], char assister_steamid[32], char assister_name[64], char weapon[32], bool isSuicide, bool isTeamKill, bool isTeamAssist, bool isHeadshot, int numPenetrated, bool isThruSmoke ) {
+public void addEvent ( char attacker_steamid[32], char attacker_name[64], char victim_steamid[32], char victim_name[64], char assister_steamid[32], char assister_name[64], char weapon[32], int isSuicide, int isTeamKill, int isTeamAssist, int isHeadshot, int numPenetrated, int isThruSmoke ) {
     checkConnection ( );
     DBStatement stmt;
 
@@ -108,12 +108,12 @@ public void addEvent ( char attacker_steamid[32], char attacker_name[64], char v
     SQL_BindParamString ( stmt, 6, assister_name, false );
     SQL_BindParamString ( stmt, 7, weapon, false );
 
-    SQL_BindParamInt ( stmt, 8, ( isSuicide ? 1 : 0 ) );
-    SQL_BindParamInt ( stmt, 9, ( isTeamKill ? 1 : 0 ) );
-    SQL_BindParamInt ( stmt, 10, ( isTeamAssist ? 1 : 0 ) );
-    SQL_BindParamInt ( stmt, 11, ( isHeadshot ? 1 : 0 ) );
+    SQL_BindParamInt ( stmt, 8, isSuicide );
+    SQL_BindParamInt ( stmt, 9, isTeamKill );
+    SQL_BindParamInt ( stmt, 10, isTeamAssist );
+    SQL_BindParamInt ( stmt, 11, isHeadshot );
     SQL_BindParamInt ( stmt, 12, numPenetrated );
-    SQL_BindParamInt ( stmt, 13, ( isThruSmoke ? 1 : 0 ) );
+    SQL_BindParamInt ( stmt, 13, isThruSmoke );
 
 
 
