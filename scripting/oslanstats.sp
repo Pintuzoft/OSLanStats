@@ -91,12 +91,26 @@ public void Event_PlayerDeath ( Event event, const char[] name, bool dontBroadca
 
 
 public void addEvent ( char attacker_steamid[32], char attacker_name[64], char victim_steamid[32], char victim_name[64], char assister_steamid[32], char assister_name[64], char weapon[32], bool isSuicide, bool isTeamKill, bool isTeamAssist, bool isHeadshot, int numPenetrated, bool isThruSmoke ) {
-    char query[255];
     checkConnection ( );
     DBStatement stmt;
-    query = "insert into event ( attacker_steamid, attacker_name, victim_steamid, victim_name, assister_steamid, assister_name, weapon, suicide, teamkill, teamassist, headshot, penetrated, thrusmoke, blinded ) values ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0 )";
 
-    if ( ( stmt = SQL_PrepareQuery ( mysql, query, error, sizeof(error) ) ) == null ) {
+    PrintToConsoleAll ( "addEvent:" );
+    PrintToConsoleAll ( "attacker_steamid: %s", attacker_steamid );
+    PrintToConsoleAll ( "attacker_name: %s", attacker_name );
+    PrintToConsoleAll ( "victim_steamid: %s", victim_steamid );
+    PrintToConsoleAll ( "victim_name: %s", victim_name );
+    PrintToConsoleAll ( "assister_steamid: %s", assister_steamid );
+    PrintToConsoleAll ( "assister_name: %s", assister_name );
+    PrintToConsoleAll ( "weapon: %s", weapon );
+    PrintToConsoleAll ( "isSuicide: %d", isSuicide );
+    PrintToConsoleAll ( "isTeamKill: %d", isTeamKill );
+    PrintToConsoleAll ( "isTeamAssist: %d", isTeamAssist );
+    PrintToConsoleAll ( "isHeadshot: %d", isHeadshot );
+    PrintToConsoleAll ( "numPenetrated: %d", numPenetrated );
+    PrintToConsoleAll ( "isThruSmoke: %d", isThruSmoke );
+
+
+    if ( ( stmt = SQL_PrepareQuery ( mysql, "insert into event ( stamp, attacker_steamid, attacker_name, victim_steamid, victim_name, assister_steamid, assister_name, weapon, suicide, teamkill, teamassist, headshot, penetrated, thrusmoke, blinded ) values ( now(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0 )", error, sizeof(error) ) ) == null ) {
         SQL_GetError ( mysql, error, sizeof(error));
         PrintToServer("[OSLanStats]: Failed to prepare query[0x01] (error: %s)", error);
         return;
