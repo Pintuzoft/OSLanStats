@@ -94,7 +94,7 @@ public void addEvent ( char attacker_steamid[32], char attacker_name[64], char v
     char query[255];
     checkConnection ( );
     DBStatement stmt;
-    query = "insert into event ( attacker_steamid, attacker_name, victim_steamid, victim_name, assister_steamid, assister_name, weapon, suicide, teamkill, teamassist, headshot, penetrated, thrusmoke ) values ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0 )";
+    query = "insert into event ( attacker_steamid, attacker_name, victim_steamid, victim_name, assister_steamid, assister_name, weapon, suicide, teamkill, teamassist, headshot, penetrated, thrusmoke, blinded ) values ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0 )";
 
     if ( ( stmt = SQL_PrepareQuery ( mysql, query, error, sizeof(error) ) ) == null ) {
         SQL_GetError ( mysql, error, sizeof(error));
