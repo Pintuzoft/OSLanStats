@@ -5,7 +5,8 @@
 
 char error[255];
 Handle mysql = null;
-numRealPlayers = 0;
+int numRealPlayers = 0;
+ConVar osls_minplayers;
 
 public Plugin myinfo = {
 	name = "OSLanStats",
@@ -19,6 +20,7 @@ public Plugin myinfo = {
 public void OnPluginStart() {
     HookEvent ( "player_death", Event_PlayerDeath );
     HookEvent ( "round_start", Event_RoundStart );
+    osls_minplayers = CreateConVar ( "osls_minplayers", "2", "Minimum number of real players to start logging" );
 }
 
 public void OnMapStart() {
@@ -162,7 +164,7 @@ public void checkRealPlayers ( ) {
 }
 
 public bool enoughRealPlayers ( ) {
-    if ( numRealPlayers >= 2 ) {
+    if ( numRealPlayers >= osls_minplayers.IntValue ) {
         return true;
     }
     return false;
