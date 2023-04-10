@@ -94,20 +94,20 @@ public void Event_PlayerDeath ( Event event, const char[] name, bool dontBroadca
         return;
     }
 
-    SQL_BindParamString ( stmt, 1, attacker_steamid, false );
-    SQL_BindParamString ( stmt, 2, attacker_name, false );
-    SQL_BindParamString ( stmt, 3, victim_steamid, false );
-    SQL_BindParamString ( stmt, 4, victim_name, false );
-    SQL_BindParamString ( stmt, 5, assister_steamid, false );
-    SQL_BindParamString ( stmt, 6, assister_name, false );
-    SQL_BindParamString ( stmt, 7, weapon, false );
+    SQL_BindParamString ( stmt, 0, attacker_steamid, false );
+    SQL_BindParamString ( stmt, 1, attacker_name, false );
+    SQL_BindParamString ( stmt, 2, victim_steamid, false );
+    SQL_BindParamString ( stmt, 3, victim_name, false );
+    SQL_BindParamString ( stmt, 4, assister_steamid, false );
+    SQL_BindParamString ( stmt, 5, assister_name, false );
+    SQL_BindParamString ( stmt, 6, weapon, false );
 
-    SQL_BindParamInt ( stmt, 8, isSuicide );
-    SQL_BindParamInt ( stmt, 9, isTeamKill );
-    SQL_BindParamInt ( stmt, 10, isTeamAssist );
-    SQL_BindParamInt ( stmt, 11, isHeadshot );
-    SQL_BindParamInt ( stmt, 12, numPenetrated );
-    SQL_BindParamInt ( stmt, 13, isThruSmoke );
+    SQL_BindParamInt ( stmt, 7, isSuicide );
+    SQL_BindParamInt ( stmt, 8, isTeamKill );
+    SQL_BindParamInt ( stmt, 9, isTeamAssist );
+    SQL_BindParamInt ( stmt, 10, isHeadshot );
+    SQL_BindParamInt ( stmt, 11, numPenetrated );
+    SQL_BindParamInt ( stmt, 12, isThruSmoke );
 
 
 
