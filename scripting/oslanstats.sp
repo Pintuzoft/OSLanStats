@@ -18,12 +18,19 @@ public Plugin myinfo = {
 
 public void OnPluginStart() {
     HookEvent ( "player_death", Event_PlayerDeath );
+    HookEvent ( "round_start", Event_RoundStart );
 }
 
-public void OnMapStart ( ) {
+public void OnMapStart() {
+    checkConnection ( );
+}
+
+public void Event_RoundStart ( Event event, const char[] name, bool dontBroadcast ) {
     checkConnection ( );
     checkRealPlayers ( );
 }
+
+
 
 public void Event_PlayerDeath ( Event event, const char[] name, bool dontBroadcast ) {
     char weapon[32];
