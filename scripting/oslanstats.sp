@@ -6,6 +6,8 @@
 char error[255];
 Handle mysql = null;
 int numRealPlayers = 0;
+int round = 0;
+char map[32];
 ConVar osls_enabled;
 ConVar osls_minplayers;
 
@@ -35,6 +37,8 @@ public void Event_RoundStart ( Event event, const char[] name, bool dontBroadcas
     ServerCommand("exec sourcemod/oslanstats.cfg");
     checkConnection ( );
     checkRealPlayers ( );
+    round = ( GetTeamScore ( CS_TEAM_CT ) + GetTeamScore ( CS_TEAM_T ) + 1 );
+    GetCurrentMap ( map, sizeof ( map ) );
 }
 
 
@@ -91,7 +95,7 @@ public void Event_PlayerDeath ( Event event, const char[] name, bool dontBroadca
 //    }
 
     if ( enoughRealPlayers ( ) ) {
-        addEvent (  
+        addEvent (
             attacker_steamid, 
             attacker_name, 
             victim_steamid, 
@@ -117,27 +121,29 @@ public void addEvent ( char attacker_steamid[32], char attacker_name[64], char v
     checkConnection ( );
     DBStatement stmt;
 
-    if ( ( stmt = SQL_PrepareQuery ( mysql, "insert into event ( stamp, attacker_steamid, attacker_name, victim_steamid, victim_name, assister_steamid, assister_name, weapon, suicide, teamkill, teamassist, headshot, penetrated, thrusmoke, blinded ) values ( now(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )", error, sizeof(error) ) ) == null ) {
+    if ( ( stmt = SQL_PrepareQuery ( mysql, "insert into event ( stamp, map, round, attacker_steamid, attacker_name, victim_steamid, victim_name, assister_steamid, assister_name, weapon, suicide, teamkill, teamassist, headshot, penetrated, thrusmoke, blinded ) values ( now(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )", error, sizeof(error) ) ) == null ) {
         SQL_GetError ( mysql, error, sizeof(error));
         PrintToServer("[OSLanStats]: Failed to prepare query[0x01] (error: %s)", error);
         return;
     }
 
-    SQL_BindParamString ( stmt, 0, attacker_steamid, false );
-    SQL_BindParamString ( stmt, 1, attacker_name, false );
-    SQL_BindParamString ( stmt, 2, victim_steamid, false );
-    SQL_BindParamString ( stmt, 3, victim_name, false );
-    SQL_BindParamString ( stmt, 4, assister_steamid, false );
-    SQL_BindParamString ( stmt, 5, assister_name, false );
-    SQL_BindParamString ( stmt, 6, weapon, false );
+    SQL_BindParamString ( stmt, 0, map, false );
+    SQL_BindParamInt    ( stmt, 1, round, false );
+    SQL_BindParamString ( stmt, 2, attacker_steamid, false );
+    SQL_BindParamString ( stmt, 3, attacker_name, false );
+    SQL_BindParamString ( stmt, 4, victim_steamid, false );
+    SQL_BindParamString ( stmt, 5, victim_name, false );
+    SQL_BindParamString ( stmt, 6, assister_steamid, false );
+    SQL_BindParamString ( stmt, 7, assister_name, false );
+    SQL_BindParamString ( stmt, 8, weapon, false );
 
-    SQL_BindParamInt ( stmt, 7, isSuicide );
-    SQL_BindParamInt ( stmt, 8, isTeamKill );
-    SQL_BindParamInt ( stmt, 9, isTeamAssist );
-    SQL_BindParamInt ( stmt, 10, isHeadshot );
-    SQL_BindParamInt ( stmt, 11, numPenetrated );
-    SQL_BindParamInt ( stmt, 12, isThruSmoke );
-    SQL_BindParamInt ( stmt, 13, isBlinded );
+    SQL_BindParamInt ( stmt, 9, isSuicide );
+    SQL_BindParamInt ( stmt, 10, isTeamKill );
+    SQL_BindParamInt ( stmt, 11, isTeamAssist );
+    SQL_BindParamInt ( stmt, 12, isHeadshot );
+    SQL_BindParamInt ( stmt, 13, numPenetrated );
+    SQL_BindParamInt ( stmt, 14, isThruSmoke );
+    SQL_BindParamInt ( stmt, 15, isBlinded );
 
     if ( ! SQL_Execute ( stmt ) ) {
         SQL_GetError ( mysql, error, sizeof(error));
@@ -191,3 +197,4 @@ public void checkConnection ( ) {
         databaseConnect ( );
     }
 }
+ 
