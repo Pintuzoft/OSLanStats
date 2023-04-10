@@ -65,10 +65,10 @@ public void Event_PlayerDeath ( Event event, const char[] name, bool dontBroadca
     int numPenetrated = GetEventInt(event, "penetrated");
     int isThruSmoke = GetEventInt (event, "thrusmoke");
 
-    if ( ! playerIsReal ( victim ) || 
-         ! playerIsReal ( attacker ) ) {
-        return;
-    }
+//    if ( ! playerIsReal ( victim ) || 
+//         ! playerIsReal ( attacker ) ) {
+//        return;
+//    }
  
     addEvent (  
         attacker_steamid, 
