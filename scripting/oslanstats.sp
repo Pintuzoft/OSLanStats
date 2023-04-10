@@ -32,6 +32,7 @@ public void OnMapStart() {
 }
 
 public void Event_RoundStart ( Event event, const char[] name, bool dontBroadcast ) {
+    ServerCommand("exec oslanstats.cfg");
     checkConnection ( );
     checkRealPlayers ( );
 }
