@@ -70,27 +70,21 @@ public void Event_PlayerDeath ( Event event, const char[] name, bool dontBroadca
 //        return;
 //    }
  
-    addEvent (  
-        attacker_steamid, 
-        attacker_name, 
-        victim_steamid, 
-        victim_name, 
-        assister_steamid, 
-        assister_name,
-        weapon,
-        isSuicide,
-        isTeamKill,
-        isTeamAssist,
-        isHeadshot, 
-        numPenetrated, 
-        isThruSmoke 
-    );
-}
-
-/* METHODS */
-
-
-public void addEvent ( char attacker_steamid[32], char attacker_name[64], char victim_steamid[32], char victim_name[64], char assister_steamid[32], char assister_name[64], char weapon[32], int isSuicide, int isTeamKill, int isTeamAssist, int isHeadshot, int numPenetrated, int isThruSmoke ) {
+//    addEvent (  
+//        attacker_steamid, 
+//        attacker_name, 
+//        victim_steamid, 
+//        victim_name, 
+//        assister_steamid, 
+//        assister_name,
+//        weapon,
+//        isSuicide,
+//        isTeamKill,
+//        isTeamAssist,
+//        isHeadshot, 
+//        numPenetrated, 
+//        isThruSmoke 
+//    );
     checkConnection ( );
     DBStatement stmt;
 
@@ -126,6 +120,46 @@ public void addEvent ( char attacker_steamid[32], char attacker_name[64], char v
         delete stmt;
     }
 }
+
+/* METHODS */
+
+
+/*public void addEvent ( char attacker_steamid[32], char attacker_name[64], char victim_steamid[32], char victim_name[64], char assister_steamid[32], char assister_name[64], char weapon[32], int isSuicide, int isTeamKill, int isTeamAssist, int isHeadshot, int numPenetrated, int isThruSmoke ) {
+    checkConnection ( );
+    DBStatement stmt;
+
+    if ( ( stmt = SQL_PrepareQuery ( mysql, "insert into event ( stamp, attacker_steamid, attacker_name, victim_steamid, victim_name, assister_steamid, assister_name, weapon, suicide, teamkill, teamassist, headshot, penetrated, thrusmoke, blinded ) values ( now(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0 )", error, sizeof(error) ) ) == null ) {
+        SQL_GetError ( mysql, error, sizeof(error));
+        PrintToServer("[OSLanStats]: Failed to prepare query[0x01] (error: %s)", error);
+        return;
+    }
+
+    SQL_BindParamString ( stmt, 1, attacker_steamid, false );
+    SQL_BindParamString ( stmt, 2, attacker_name, false );
+    SQL_BindParamString ( stmt, 3, victim_steamid, false );
+    SQL_BindParamString ( stmt, 4, victim_name, false );
+    SQL_BindParamString ( stmt, 5, assister_steamid, false );
+    SQL_BindParamString ( stmt, 6, assister_name, false );
+    SQL_BindParamString ( stmt, 7, weapon, false );
+
+    SQL_BindParamInt ( stmt, 8, isSuicide );
+    SQL_BindParamInt ( stmt, 9, isTeamKill );
+    SQL_BindParamInt ( stmt, 10, isTeamAssist );
+    SQL_BindParamInt ( stmt, 11, isHeadshot );
+    SQL_BindParamInt ( stmt, 12, numPenetrated );
+    SQL_BindParamInt ( stmt, 13, isThruSmoke );
+
+
+
+    if ( ! SQL_Execute ( stmt ) ) {
+        SQL_GetError ( mysql, error, sizeof(error));
+        PrintToServer("[OSLanStats]: Failed to execute query[0x01] (error: %s)", error);
+        return;
+    }
+    if ( stmt != null ) {
+        delete stmt;
+    }
+}*/
 
 public bool playerIsReal ( int client ) {
     if ( client < 1 || client > MaxClients ) {
