@@ -6,6 +6,7 @@
 char error[255];
 Handle mysql = null;
 int numRealPlayers = 0;
+ConVar osls_enabled;
 ConVar osls_minplayers;
 
 public Plugin myinfo = {
@@ -20,6 +21,7 @@ public Plugin myinfo = {
 public void OnPluginStart() {
     HookEvent ( "player_death", Event_PlayerDeath );
     HookEvent ( "round_start", Event_RoundStart );
+    osls_enabled = CreateConVar ( "osls_enabled", "1", "Enable logging" );
     osls_minplayers = CreateConVar ( "osls_minplayers", "4", "Minimum number of real players to start logging" );
     AutoExecConfig ( true, "oslanstats" );
 
@@ -37,6 +39,9 @@ public void Event_RoundStart ( Event event, const char[] name, bool dontBroadcas
 
 
 public void Event_PlayerDeath ( Event event, const char[] name, bool dontBroadcast ) {
+    if ( ! osls_enabled.BoolValue ) {
+        return;
+    }
     char weapon[32];
     int victim_id = GetEventInt(event, "userid");
     int attacker_id = GetEventInt(event, "attacker");
