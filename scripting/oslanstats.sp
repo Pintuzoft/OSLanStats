@@ -7,7 +7,7 @@ char error[255];
 Handle mysql = null;
 int numRealPlayers = 0;
 int round = 0;
-char map[32];
+char map[64];
 ConVar osls_enabled;
 ConVar osls_minplayers;
 
