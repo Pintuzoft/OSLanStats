@@ -162,7 +162,7 @@ public void checkRealPlayers ( ) {
 }
 
 public bool enoughRealPlayers ( ) {
-    if ( numRealPlayers >= 1 ) {
+    if ( numRealPlayers >= 2 ) {
         return true;
     }
     return false;
