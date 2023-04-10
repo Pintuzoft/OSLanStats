@@ -20,7 +20,9 @@ public Plugin myinfo = {
 public void OnPluginStart() {
     HookEvent ( "player_death", Event_PlayerDeath );
     HookEvent ( "round_start", Event_RoundStart );
-    osls_minplayers = CreateConVar ( "osls_minplayers", "2", "Minimum number of real players to start logging" );
+    osls_minplayers = CreateConVar ( "osls_minplayers", "4", "Minimum number of real players to start logging" );
+    AutoExecConfig ( true, "oslanstats" );
+
 }
 
 public void OnMapStart() {
