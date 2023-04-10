@@ -5,6 +5,7 @@
 
 char error[255];
 Handle mysql = null;
+numRealPlayers = 0;
 
 public Plugin myinfo = {
 	name = "OSLanStats",
@@ -21,6 +22,7 @@ public void OnPluginStart() {
 
 public void OnMapStart ( ) {
     checkConnection ( );
+    checkRealPlayers ( );
 }
 
 public void Event_PlayerDeath ( Event event, const char[] name, bool dontBroadcast ) {
@@ -70,24 +72,25 @@ public void Event_PlayerDeath ( Event event, const char[] name, bool dontBroadca
 //         ! playerIsReal ( attacker ) ) {
 //        return;
 //    }
- 
-    addEvent (  
-        attacker_steamid, 
-        attacker_name, 
-        victim_steamid, 
-        victim_name, 
-        assister_steamid, 
-        assister_name,
-        weapon,
-        isSuicide,
-        isTeamKill,
-        isTeamAssist,
-        isHeadshot, 
-        numPenetrated, 
-        isThruSmoke,
-        isBlinded
-    );
- 
+
+    if ( enoughRealPlayers ( ) ) {
+        addEvent (  
+            attacker_steamid, 
+            attacker_name, 
+            victim_steamid, 
+            victim_name, 
+            assister_steamid, 
+            assister_name,
+            weapon,
+            isSuicide,
+            isTeamKill,
+            isTeamAssist,
+            isHeadshot, 
+            numPenetrated, 
+            isThruSmoke,
+            isBlinded
+        );
+    }
 }
 
 /* METHODS */
@@ -134,7 +137,25 @@ public bool playerIsReal ( int client ) {
         return false;
     }
     if ( IsClientInGame ( client ) &&
+         ! IsFakeClient ( client ) &&
          ! IsClientSourceTV ( client ) ) {
+        return true;
+    }
+    return false;
+}
+
+public void checkRealPlayers ( ) {
+    numRealPlayers = 0;
+    for ( int i = 1; i <= MaxClients; i++ ) {
+        if ( playerIsReal ( i ) ) {
+            numRealPlayers++;
+        }
+    }
+    PrintToChatAll ( "[OSLanStats]: %d real players is connected", numRealPlayers );
+}
+
+public bool enoughRealPlayers ( ) {
+    if ( numRealPlayers >= 1 ) {
         return true;
     }
     return false;
