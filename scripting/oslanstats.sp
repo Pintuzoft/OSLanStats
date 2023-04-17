@@ -47,6 +47,10 @@ public void Event_PlayerDeath ( Event event, const char[] name, bool dontBroadca
     if ( ! osls_enabled.BoolValue ) {
         return;
     }
+    if ( isWarmup ( ) ) {
+        PrintToChatAll ( "Warmup!!" );
+        return;
+    }
     char weapon[32];
     int victim_id = GetEventInt(event, "userid");
     int attacker_id = GetEventInt(event, "attacker");
@@ -198,3 +202,9 @@ public void checkConnection ( ) {
     }
 }
  
+public bool isWarmup ( ) {
+    if ( GameRules_GetProp ( "m_bWarmupPeriod" ) == 1 ) {
+        return true;
+    } 
+    return false;
+}
